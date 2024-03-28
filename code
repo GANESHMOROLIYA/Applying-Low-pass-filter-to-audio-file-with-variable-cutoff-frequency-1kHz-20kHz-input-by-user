@@ -1,0 +1,41 @@
+ %Applying Low pass filter to audio file with variable cutoff frequency
+ (1Khz-20KHz) input by user
+ clc;
+ %Clear command window
+ clear;
+ close all;
+ %Clear workspace
+ %Close all open figures
+ %Load audio file
+ [g, fs] = audioread('ganesh1.mp3.mpeg'); % Read audio file and get sample rate
+ disp('Playing audio...')
+ sound(g, fs);
+ pause(18);
+ N=length(g);
+ %Play the original audio
+ %Pause in seconds (adjust based on the length of your audio)
+ %Number of samples in the audio file
+ t = 0:1/fs:(N-1)/fs; % Time vector for the audio signal
+ noise = 0.0005 * sin(2 * pi * t * 18000); % Generate sinusoidal noise
+ gn = g+noise;
+ %Addnoise to the original audio signal
+ %User-defined cutoff frequency
+ fc = input('Enter cutoff frequency (1KHz-20KHz): ');
+ %Design low-pass filter
+ [b, a] = butter(10, fc / (fs / 2), 'low'); % 10th order Butterworth low-pass filter
+ %Apply the filter to the input signal
+ y =filter(b, a, gn);
+ %Plot input and output spectra
+ f = linspace(0, fs/2, N/2); % Positive frequencies up to Nyquist
+ X=fft(gn);
+ Y=fft(y);
+ figure; % Create a new figure
+ subplot(2,1,1);
+ 7
+plot(f, abs(X(1:N/2))), title('Spectrum of input signal'), xlabel('Frequency (Hz)'),
+ ylabel('Amplitude');
+ subplot(2,1,2);
+ plot(f, abs(Y(1:N/2)), 'r'), title('Spectrum of filtered output signal'), xlabel('Frequency
+ (Hz)'), ylabel('Amplitude');
+ %Listen to the signals
+ soundsc(y, fs);
